@@ -1,1 +1,3 @@
 code/textbook/ai-with-python/Part3/convolutionalNeuralNet/data/
+**/__pycache__/
+**/data/
