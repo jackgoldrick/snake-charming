@@ -16,7 +16,7 @@ def create_and_train(dir_path='data/set', tokenizer=Tokenizer()):
     """ Create the Encoder Model
     """
     questions, answers = load_data(dir_path)
-    encoder_input_data, decoder_input_data, decoder_output_data, maxlen_questions, maxlen_answers, VOCAB_SIZE, tokenizer = chef_data(questions, answers, tokenizer)
+    encoder_input_data, decoder_input_data, decoder_output_data, maxlen_questions, maxlen_answers, VOCAB_SIZE, _ = chef_data(questions=questions, answers=answers, tokenizer=tokenizer)
     
     encoder_inputs = tf.keras.layers.Input(shape=( maxlen_questions , ))
     encoder_embedding = tf.keras.layers.Embedding( VOCAB_SIZE, 200, mask_zero=True ) (encoder_inputs)
@@ -49,8 +49,8 @@ def create_and_train(dir_path='data/set', tokenizer=Tokenizer()):
     for sampled_word_index in sampled_word_indexes:
         sampled_word = None
         # Check if sampled_word_index exists in tokenizer_dict
-        if sampled_word_index in tokenizer_dict:
-            sampled_word = tokenizer_dict[sampled_word_index]
+        # if sampled_word_index in tokenizer_dict:
+        sampled_word = tokenizer_dict[sampled_word_index]
         sentence += ' {}'.format(sampled_word)
         
         if sampled_word == 'end' or len(sentence.split()) > maxlen_answers:
@@ -66,7 +66,9 @@ def create_and_train(dir_path='data/set', tokenizer=Tokenizer()):
 def make_inference_model(model, encoder_inputs, decoder_inputs,  encoder_states, decoder_embedding):
     decoder_lstm = model.get_layer('LSTM')
     decoder_dense = model.get_layer('dense_decoder')
-    encoder_model = tf.keras.models.Model(encoder_inputs, encoder_states)
+    
+    
+    encoder_model = tf.keras.Model(encoder_inputs, encoder_states)
   
   
   
@@ -86,7 +88,7 @@ def make_inference_model(model, encoder_inputs, decoder_inputs,  encoder_states,
     decoder_outputs = decoder_dense(decoder_outputs)
 
     # Define the decoder model
-    decoder_model = tf.keras.models.Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states)
+    decoder_model = tf.keras.Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states)
         
         
     # decoder_outputs, state_h, state_c = decoder_lstm(decoder_embedding , initial_state=decoder_states_inputs)
